@@ -10,8 +10,12 @@ tar_option_set(format = 'qs')
 
 
 # Targets -----------------------------------------------------------------
-
 c(
+  
+  tar_target(
+    dag,
+    make_dag()
+  ),
   
   tar_file_read(
     kills_raw,
