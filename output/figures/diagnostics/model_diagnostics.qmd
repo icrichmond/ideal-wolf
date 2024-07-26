@@ -1,0 +1,51 @@
+---
+title: "Model Diagnostics"
+format: html
+---
+
+
+```{r, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
+source('R/packages.R')
+
+tar_load(model_list)
+
+plot_model <- function(model){
+    
+  # chain mixing
+  plot(model)
+  
+  # autocorrelation
+  ac <- as_draws_df(model) %>% 
+    mutate(chain = .chain) %>% 
+    select(starts_with("b_")) %>% 
+    mcmc_acf( lags = 10)
+  
+  plot(ac)
+  
+  # rhat check
+  rhats <- brms::rhat(model)
+  plot(mcmc_rhat(rhats) + 
+    yaxis_text(hjust = 1))
+  
+  # neff ratio
+  ratios <- neff_ratio(model)
+  plot(mcmc_neff(ratios, size = 2))
+  
+  # posterior check
+  plot(pp_check(model, ndraws = 100))
+    
+  }
+```
+
+## Model Diagnostic Plots
+
+These model diagnostic plots assess whether the chains of our models are converged and well mixed, and if the model is well specified and has an adequate fit.
+
+The first plot of the series shows trace plots for each of our parameters, where we want to see stationary and well-mixed chains. The second plot shows an autocorrelation plot by chain and parameter. We want our autocorrelation to quickly drop to zero with increasing lag. Next we have a visual inspection of $\hat{R}$ values. If chains are at equilibrium and have converged to a common distribution values, $\hat{R}$ will be 1. We also visually inspect $n_{eff}$ ratio, which indicates if the draws of the Markov chain are behaving independently. If there is autocorrelation, $n_{eff}$ is usually smaller than the total sample size N, so the larger the ratio of $n_{eff}$ to N, the better (if the ratio is less than 0.1 that indicates a problem).  Finally, we have the posterior predictive check where we want the black line to be within/close to the blue lines, to indicate that our model is adequately generative.
+
+## Model 1: Vander-Vennen Paper
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+mod <- model_list['VanderVennen']
+plot_model(mod[[1]])
+```

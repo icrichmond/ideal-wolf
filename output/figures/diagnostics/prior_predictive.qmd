@@ -17,31 +17,33 @@ plot_prior <- function(mod, xmin, xmax){
   
   # pull variables from model 
   vars <- colnames(mod$data)[-1]
+  nlpars <- sort(unique(unlist(mod$prior$nlpar)))[-1]
   
-  vars <- distinct(as_tibble(mod$VanderVennen_prior$prior$nlpar)) %>% 
-    filter(value != "")
+  allvars <- c(vars, nlpars)
   
   # identify categorical variables 
-  factors <- names(Filter(is.factor,mod$data[-1]))
-  
+  #factors <- names(Filter(is.factor,mod$data[-1]))
+
   # identify numeric variables 
-  numeric <- names(Filter(is.numeric,mod$data[-1]))
+  #numeric <- names(Filter(is.numeric,mod$data[-1]))
   
-  figlist <- lapply(numeric, function(x){
+  figlist <- lapply(allvars, function(x){
     
-    df <- data.frame(matrix(ncol=length(vars),nrow=0, dimnames=list(NULL, vars)))
+    df <- data.frame(matrix(ncol=length(allvars),nrow=0, dimnames=list(NULL, allvars)))
+    
+    colnames(df) <- allvars
     
     df %<>%
       summarise_at(x, ~seq_d) %>%
       bind_rows(df, .) %>%
-      mutate(across(all_of(factors), as.factor)) %>% 
-      mutate(across(all_of(numeric), ~ replace(., is.na(.), 0)))
+      #mutate(across(all_of(factors), as.factor)) %>% 
+      mutate(across(all_of(allvars), ~ replace(., is.na(.), 0)))
     
     epred <- add_epred_draws(df, mod)
     
     ggplot(epred, aes(x = get(x), y = .epred)) +
       geom_line(aes(group = .draw), alpha = 0.1) +
-      labs(y = "Predicted Temperature", x = x) +
+      labs(y = "Predicted Kill Rate", x = x) +
       theme_classic()
     
   })
