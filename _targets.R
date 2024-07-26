@@ -53,10 +53,10 @@ c(
                  nl=TRUE),
     prior = c(
       prior(exponential(1), class = 'sigma'),
-      prior(normal(0.5, 1), lb = 0, nlpar = "effectspeed"),
-      prior(normal(0.5, 1), lb = 0, nlpar = "CrepuscularLight"),
-      prior(normal(0.5, 1), lb = 0, nlpar = "TotalLight")),
-    family = gaussian(),
+      prior(normal(0.5, 2), lb = 0, nlpar = "effectspeed"),
+      prior(normal(0.5, 2), lb = 0, nlpar = "CrepuscularLight"),
+      prior(normal(0.5, 2), lb = 0, nlpar = "TotalLight")),
+    family = gaussian(), # should this be Poisson? it is a kill rate 
     data = vv_data,
     chains = 4,
     iter = 2000,
@@ -78,7 +78,13 @@ c(
   
   tar_render(
     prior_checks,
-    path = 'R/prior_predictive.qmd',
+    path = 'output/figures/diagnostics/prior_predictive.qmd',
+    working_directory = NULL
+  ),
+  
+  tar_render(
+    diagnostic_checks,
+    path = 'output/figures/diagnostics/model_diagnostics.qmd',
     working_directory = NULL
   )
   
