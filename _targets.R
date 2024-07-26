@@ -46,7 +46,7 @@ c(
   
   zar_brms(
     vv_model,
-    # VV log-transformed so equation would be additive + counted light as detectability
+    # VV log-transformed so equation would be additive (? doesn't make sense without logged response) + counted light as detectability
     formula = bf(KillRate ~ effectspeed + CrepuscularLight + TotalLight,
                  effectspeed ~ sqrt(MooseSpeed^2 + WolfSpeed^2),
                  CrepuscularLight + TotalLight ~ 1,
