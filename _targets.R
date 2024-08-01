@@ -49,13 +49,10 @@ c(
     # VV log-transformed so equation would be additive (? doesn't make sense without logged response) + counted light as detectability
     formula = bf(KillRate ~ effectspeed + CrepuscularLight + TotalLight,
                  effectspeed ~ sqrt(MooseSpeed^2 + WolfSpeed^2),
-                 CrepuscularLight + TotalLight ~ 1,
                  nl=TRUE),
     prior = c(
       prior(exponential(1), class = 'sigma'),
-      prior(normal(0.5, 2), lb = 0, nlpar = "effectspeed"),
-      prior(normal(0.5, 2), lb = 0, nlpar = "CrepuscularLight"),
-      prior(normal(0.5, 2), lb = 0, nlpar = "TotalLight")),
+      prior(normal(0.5, 2), lb = 0, nlpar = "effectspeed")),
     family = gaussian(), # should this be Poisson? it is a kill rate 
     data = vv_data,
     chains = 4,
